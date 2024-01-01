@@ -3,6 +3,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver, Signal
 from django_rest_passwordreset.signals import reset_password_token_created
 
+
 from backend.models import ConfirmEmailToken, User
 
 new_user_registered = Signal()
@@ -55,6 +56,7 @@ def new_user_registered_signal(user_id, **kwargs):
         [token.user.email]
     )
     msg.send()
+    print(f'Письмо отправлено {token.user.email}')
 
 
 @receiver(new_order)
