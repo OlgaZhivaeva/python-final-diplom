@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pd_dihlom_db',
         'USER': 'postgres',
-        'PASSWORD': '01892684',
+        'PASSWORD': '12345678',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
