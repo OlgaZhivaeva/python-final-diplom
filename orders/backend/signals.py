@@ -78,3 +78,4 @@ def new_order_signal(user_id, **kwargs):
         [user.email]
     )
     msg.send()
+    print(f'Заказ сформирован {user.email}')
