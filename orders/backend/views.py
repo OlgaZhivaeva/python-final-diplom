@@ -486,7 +486,6 @@ class PartnerExport(APIView):
 
                 if new_available_quantity < 0:
                     new_ordered_quantity = ordered_quantity + new_available_quantity
-                    print(new_ordered_quantity)
                     new_available_quantity = 0
 
                     #изменяем количество продукта в ордере
