@@ -472,23 +472,31 @@ class PartnerExport(APIView):
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
 
-        orders_new = Order.objects.filter(ordered_items__product_info__shop__user_id=request.user.id, state='new').distinct()
+        orders_new = Order.objects.filter(ordered_items__product_info__shop__user_id=request.user.id, state='new').order_by('pk').distinct()
         for order_new in orders_new:
             order_id = order_new.id
-            print(order_id)
             user_id = order_new.user.id
-            print(user_id)
-            ordered_prodacts = Order.objects.get(pk=order_id).ordered_items.all()
-            print(ordered_prodacts)
+            ordered_products = Order.objects.get(pk=order_id).ordered_items.all()
 
-            for prodact in ordered_prodacts:
-                ordered_quantity = prodact.quantity
-                prodact_id = prodact.product_info.id
-                available_products = prodact.product_info.quantity
-                print(prodact_id, ordered_quantity, available_products)
+            for product in ordered_products:
+                ordered_quantity = product.quantity
+                product_id = product.product_info.id
+                available_quantity = product.product_info.quantity
+                new_available_quantity = available_quantity - ordered_quantity
+
+                if new_available_quantity < 0:
+                    new_ordered_quantity = ordered_quantity + new_available_quantity
+                    print(new_ordered_quantity)
+                    new_available_quantity = 0
+
+                    #изменяем количество продукта в ордере
+                    OrderItem.objects.filter(order_id=order_id,product_info_id=product_id).update(quantity=new_ordered_quantity)
+
+                #изменяем количество продукта в базе
+                ProductInfo.objects.filter(product_id=product_id).update(quantity=new_available_quantity)
 
             # посылаем сигнал заказ подтвержден
-            #export_order.send(sender=self.__class__, user_id=user_id, order_id=order_id)
+            export_order.send(sender=self.__class__, user_id=user_id, order_id=order_id)
 
 
         return JsonResponse({'Status': True})
