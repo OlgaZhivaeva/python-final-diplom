@@ -15,7 +15,7 @@ from pathlib import Path
 
 load_dotenv()
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-PASSWORD = os.getenv("PASSWORD")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -90,7 +90,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '5432',
         'USER': 'postgres',
-        'PASSWORD': PASSWORD,
+        'PASSWORD': DB_PASSWORD,
     }
 }
 

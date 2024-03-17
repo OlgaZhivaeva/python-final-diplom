@@ -3,11 +3,13 @@ from django_rest_passwordreset.views import reset_password_request_token, reset_
 
 from backend.views import PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, \
     BasketView, \
-    AccountDetails, ContactView, OrderView, PartnerState, PartnerOrders, ConfirmAccount
+    AccountDetails, ContactView, OrderView, PartnerState, PartnerOrders, ConfirmAccount, EditOrderState, PartnerExport
 
 
 app_name = 'backend'
 urlpatterns = [
+    path('partner/export', PartnerExport.as_view(), name='partner-export'),
+    path('edit_state', EditOrderState.as_view(), name='edit-state'),
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'),
     path('partner/state', PartnerState.as_view(), name='partner-state'),
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),
