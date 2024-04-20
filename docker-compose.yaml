@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+
+  celery:
+    build:
+      context: .
+
+    command: [ "celery", "--workdir=./orders", "-A", "orders", "--loglevel=info", "worker"]
+
+    volumes:
+      - ./orders:/orders
+
+    depends_on:
+      - redis
+
+
+
+
+
+  django:
+    build:
+      context: ./
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./python-final-diplom:/python-final-diplom
+
+    command: [ "python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+    depends_on:
+      - db
+
+
+
+  db:
+    image: postgres
+    ports:
+      - "5431:5432"
+    environment:
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      NAME: ${DB_NAME}
+      PASSWORD: ${DB_PASSWORD}

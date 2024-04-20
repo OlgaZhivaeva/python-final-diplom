@@ -22,7 +22,7 @@ from backend.models import Shop, Category, Product, ProductInfo, Parameter, Prod
 
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer
-from backend.signals import new_user_registered, new_order, edit_order_state, export_order
+from backend.tasks import new_user_registered, new_order, edit_order_state, export_order
 
 class PartnerUpdate(APIView):
     """
@@ -106,7 +106,7 @@ class RegisterAccount(APIView):
                     user.set_password(request.data['password'])
                     user.save()
                     # посылаем сигнал зарегистрирован новый пользователь
-                    new_user_registered.send(sender=self.__class__, user_id=user.id)
+                    new_user_registered.delay(user_id=user.id)
                     return JsonResponse({'Status': True})
                 else:
                     return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
@@ -495,7 +495,7 @@ class PartnerExport(APIView):
                 ProductInfo.objects.filter(product_id=product_id).update(quantity=new_available_quantity)
 
             # посылаем сигнал заказ подтвержден
-            export_order.send(sender=self.__class__, user_id=user_id, order_id=order_id)
+            export_order.delay(sender=self.__class__, user_id=user_id, order_id=order_id)
 
 
         return JsonResponse({'Status': True})
@@ -535,7 +535,7 @@ class OrderView(APIView):
                 else:
                     if is_updated:
                         # посылаем сигнал заказ сформирован
-                        new_order.send(sender=self.__class__, user_id=request.user.id)
+                        new_order.delay(sender=self.__class__, user_id=request.user.id)
                         return JsonResponse({'Status': True})
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
@@ -562,7 +562,7 @@ class EditOrderState(APIView):
                             user_id = Order.objects.get(id=request.data['id']).user_id
                             state = request.data['state']
                             # посылаем сигнал статус заказа изменен
-                            edit_order_state.send(sender=self.__class__, user_id=user_id, state=state)
+                            edit_order_state.delay(user_id=user_id, state=state)
                             return JsonResponse({'Status': True})
 
             return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})

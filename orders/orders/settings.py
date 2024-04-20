@@ -15,7 +15,8 @@ from pathlib import Path
 
 load_dotenv()
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_PASSWORD = os.getenv("DB_PASSWORD", '01892684')
+DB_NAME = os.getenv("DB_NAME", 'python_final_dihlom')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,7 +87,7 @@ WSGI_APPLICATION = 'orders.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'python_final_dihlom',
+        'NAME': DB_NAME,
         'HOST': '127.0.0.1',
         'PORT': '5432',
         'USER': 'postgres',
@@ -167,3 +168,4 @@ REST_FRAMEWORK = {
     ),
 
 }
+CELERY_BROKER_URL = 'redis://localhost:6379'
